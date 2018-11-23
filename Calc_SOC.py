@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# Note that the script runs only on python3!
+# It works best when running from Anaconda Prompt as Anaconda has the pandas module installed 
 
+# The folder structure used was: .../RandomPoints/#ofPoints/.csvFiles, e.g:
+# .../RandomPoints/20/.csvFiles where .csvFiles represents the location where all the .csv files where stored
+# Please note that two output folder are required in the parent folder of the datasets: "stats" and "mean_det", e.g.:
+# .../RandomPoints/stats and .../RandomPoints/mean_det
 
 import pandas as pd
 import os
 
 
-# In[2]:
-
-
 path = input('Where are the files located? (e.g. RandomPoints/20): ')
 print('Computing...')
-#print(path)
+#os.fsencode() may produce problems, could possibly be resolved with os.path.fsencode()
 directory = os.fsencode(path)
 col_names =  ['1', '4', '7', '8', '9', '10', '11', '12', '13', '14', '17', '21']
 g = []
@@ -31,10 +33,6 @@ for file in os.listdir(directory):
         g[count] =pd.read_csv(filepath, sep=',')
         number[count] = pd.DataFrame(index=g[count].index, columns = col_names)
         count = count + 1
-
-
-# In[3]:
-
 
 for n in range(len(g)):
     for i in range(len(g[n].values)):
@@ -64,9 +62,6 @@ for n in range(len(g)):
                 number[n].at[i, '21'] = g[n].values[i,1]
 
 
-# In[4]:
-
-
 mean = pd.DataFrame(columns = col_names)
 for i in range(len(number)):
     mean.at[i, '1'] = number[i].loc[:,'1'].mean()
@@ -83,10 +78,6 @@ for i in range(len(number)):
     mean.at[i, '21'] = number[i].loc[:,'21'].mean()
     mean.at[i,'MEAN'] = mean.fillna(0).iloc[i]['1'] * 0.034298702 + mean.fillna(0).iloc[i]['4'] * 0.046317022 +     mean.fillna(0).iloc[i]['7'] * 0.048348772 + mean.fillna(0).iloc[i]['8'] * 0.025861772 + mean.fillna(0).iloc[i]['9'] * 0.012190502 +     mean.fillna(0).iloc[i]['10'] * 0.190605737 + mean.fillna(0).iloc[i]['11'] * 0.058851889 + mean.fillna(0).iloc[i]['12'] * 0.346912772 +     mean.fillna(0).iloc[i]['13'] * 0.051895726 + mean.fillna(0).iloc[i]['14'] * 0.134508764 + mean.fillna(0).iloc[i]['17'] * 0.050208341
     mean.at[i,'MEAN_PERCENT'] =  (mean.fillna(0).iloc[i]['MEAN'] / 29.5) * 100
-#mean
-
-
-# In[5]:
 
 
 std = pd.DataFrame(columns = col_names)
@@ -103,11 +94,6 @@ for i in range(len(number)):
     std.at[i, '14'] = number[i].loc[:,'14'].std()
     std.at[i, '17'] = number[i].loc[:,'17'].std()
     std.at[i, '21'] = number[i].loc[:,'21'].std()
-#std
-
-
-# In[6]:
-
 
 maxi = pd.DataFrame(columns = col_names)
 for i in range(len(number)):
@@ -123,11 +109,6 @@ for i in range(len(number)):
     maxi.at[i, '14'] = number[i].loc[:,'14'].max()
     maxi.at[i, '17'] = number[i].loc[:,'17'].max()
     maxi.at[i, '21'] = number[i].loc[:,'21'].max()
-#maxi
-
-
-# In[7]:
-
 
 mini = pd.DataFrame(columns = col_names)
 for i in range(len(number)):
@@ -143,10 +124,6 @@ for i in range(len(number)):
     mini.at[i, '14'] = number[i].loc[:,'14'].min()
     mini.at[i, '17'] = number[i].loc[:,'17'].min()
     mini.at[i, '21'] = number[i].loc[:,'21'].min()
-#mini
-
-
-# In[8]:
 
 
 col_names =  ['1', '4', '7', '8', '9', '10', '11', '12', '13', '14', '17', '21']
@@ -216,10 +193,6 @@ stats.at['Min', '13'] = mini.loc[:,'13'].mean()
 stats.at['Min', '14'] = mini.loc[:,'14'].mean()
 stats.at['Min', '17'] = mini.loc[:,'17'].mean()
 stats.at['Min', '21'] = mini.loc[:,'21'].mean()
-#stats
-
-
-# In[9]:
 
 
 xsum = stats.sum(axis=1)
@@ -241,7 +214,7 @@ for index, row in mean.iterrows():
 
 trueitems = ((len(g) - indexover - indexunder)/len(g))*100
 
-# In[10]:
+
 print('Finished!')
 #	pathstats = input('Where do you want to save the statistics file? (e.g. RandomPoints/20/): ')
 filestats1 = input('Wheres the parent folder?')
@@ -253,6 +226,9 @@ with open(str(filestats1) + '\\stats\\' +  str(filestats) + '_' + str(numperp)  
     f.write('The average landscape mean is: {namem}\nThe average standard deviation of the means is: {namest}\nThe maximum of the means is: {namemaxm}\nThe maximum of the means in percent is: {namemaxp}\nThe minimum of the means is: {namemmin}\nThe minimum of the means in percent is: {namemminp}\n{valueover} values are over 110%\n{valueunder} values are under 90%\n{valueright} values fall within +-10%'.format(namem=msum, namest=stddevmean, namemaxm=meanmax, namemaxp=meanmaxperc, namemmin=meanmin, namemminp=meanminperc, valueover=indexover, valueunder=indexunder, valueright=trueitems))
     f.close
 mean.to_csv(str(filestats1) + '\\mean_det\\' +  str(filestats) + '_' + str(numperp)  + '.csv')
+
+#The following section would ask for a little more user input
+#It's currently disabled to allow for streamlined processing 
 
 #statsyes = input('Do you want the summarized statistics? (Y/N): ')
 #if statsyes == "Y" or statsyes == "y":
